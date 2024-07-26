@@ -80,7 +80,7 @@ public class DocumentProcessController {
 		return ResponseEntity.ok(list);
 	}
 
-	@PostMapping("uploadDocument1")
+	@PostMapping("/uploadDocument1")
 	public String uploadDocument(@RequestParam("file") MultipartFile file) throws IOException {
 
 		String size = String.valueOf(file.getSize());
@@ -105,7 +105,34 @@ public class DocumentProcessController {
 		return "Document Uploaded SuccessFully";
 	}
 
-	@GetMapping("")
+	@GetMapping("/getUnassignTask")
+	public List<ProcessDetails> getUnassignTask(){
+		return engineService.getUnassignTask();
+	}
+
+	@GetMapping("/getAssignTask")
+	public List<ProcessDetails> getAssigntask(){
+		return engineService.getassignTask();
+	}
+
+	@GetMapping("/claimTask")
+	public String claimTask(@RequestParam String taskId){
+		engineService.claimTask(taskId);
+		return "Claimed SuccessFully";
+	}
+
+	@GetMapping("/unClaimTask")
+	public String unClaim(@RequestParam String taskId){
+		engineService.unClaimTask(taskId);
+		return "Unclaimed SuccessdFully";
+	}
+
+	@GetMapping("/completeTask")
+	public String completeTask(@RequestParam String taskId){
+		engineService.completeTask(taskId);
+		return "Task Completed SuccessFully";
+	}
+
 
 
 

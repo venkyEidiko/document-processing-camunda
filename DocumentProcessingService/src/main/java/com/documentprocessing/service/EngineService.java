@@ -2,8 +2,7 @@ package com.documentprocessing.service;
 
 import com.documentprocessing.entity.ProcessDetails;
 import com.documentprocessing.model.camundaVariable.CamundaVariables;
-import com.documentprocessing.model.request.StartProcessRequest;
-import com.documentprocessing.model.request.UnAssignRequest;
+import com.documentprocessing.model.request.*;
 import com.documentprocessing.model.response.StartProcessResponse;
 import com.documentprocessing.model.response.TaskCamundaResponse;
 import lombok.RequiredArgsConstructor;
@@ -59,16 +58,43 @@ public class EngineService {
         List<ProcessDetails> list = new ArrayList<>();
         for(TaskCamundaResponse task : response){
             processDetails = processService.getProcessDetails(task.getProcessInstanceId());
+            if(processDetails.getTaskId()==null || processDetails.equals("")) {
+                processDetails.setTaskId(task.getId());
+                processDetails = processService.save(processDetails);
+            }
             list.add(processDetails);
         }
         return list;
     }
+
+    public List<ProcessDetails> getassignTask(){
+        TaskCamundaResponse[] response = webClientService.postCall(GET_UNASSIGN_TASK, new AssigntaskRequest(), com.documentprocessing.model.response.TaskCamundaResponse[].class);
+        List<ProcessDetails> list = generateProcessDetails(response);
+        return list;
+    }
+
+    public void claimTask(String taskId){
+        String url = String.format(CLAIM_TASK,taskId);
+        webClientService.postCall(url,new ClaimRequestCamunda(),Object.class);
+    }
+
+    public void unClaimTask(String taskId) {
+        String url = String.format(UNCLAIM_TASK,taskId);
+        webClientService.postCall(url);
+    }
+
+    public void completeTask(String taskId){
+        String url = String.format(CLAIM_TASK,taskId);
+        webClientService.postCall(url,new CompleteTaskRequestCamunda(),Object.class);
+    }
+
 
     private String generateBusinessKey() {
         Random random = new Random();
         int randomNumber = random.nextInt(9000) + 1000;
         return "DOC" + randomNumber;
     }
+
 
 
 }

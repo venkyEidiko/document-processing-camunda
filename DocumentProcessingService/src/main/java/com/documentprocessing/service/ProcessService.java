@@ -27,7 +27,7 @@ public class ProcessService {
         return processRepository.findByProcessInstanceId(processInstanceId);
     }
 
-
-
-
+    public ProcessDetails save(ProcessDetails processDetails) {
+        return processRepository.save(processDetails);
+    }
 }
