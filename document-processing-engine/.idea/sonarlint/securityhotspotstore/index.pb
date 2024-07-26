@@ -1,0 +1,13 @@
+
+O
+src/main/resources/process.bpmn,f\e\fecf0a339d0de2c2f2f3a44099a6c7d02ff8516b
+y
+Isrc/main/java/bpm/document/processing/engine/service/DocumentProcess.java,f\c\fc3aaa37b89f14bb92f042b13956a9f0c53001e7
+m
+=src/main/java/bpm/document/processing/engine/Application.java,8\8\88f70c9f5a939d3ae2623da662581305c266d854
+w
+Gsrc/main/java/bpm/document/processing/engine/entity/ProcessDetails.java,b\f\bf8e0f25321ef0d7724b11bac80f34f2707fa186
+~
+Nsrc/main/java/bpm/document/processing/engine/repository/ProcessRepository.java,7\0\70e60bddba7c5f22b23095f2bfbe5ba87a40044f
+7
+pom.xml,4\4\442292b8a7efeabbe4cc176709b833b1792140ec
