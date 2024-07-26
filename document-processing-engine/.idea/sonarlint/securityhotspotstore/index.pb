@@ -11,3 +11,7 @@ Gsrc/main/java/bpm/document/processing/engine/entity/ProcessDetails.java,b\f\bf
 Nsrc/main/java/bpm/document/processing/engine/repository/ProcessRepository.java,7\0\70e60bddba7c5f22b23095f2bfbe5ba87a40044f
 7
 pom.xml,4\4\442292b8a7efeabbe4cc176709b833b1792140ec
+p
+@src/main/java/bpm/document/processing/engine/entity/Aadhaar.java,8\d\8d0acfee65396d489b137eb9b089f9ad7fcc894d
+‰
+Ysrc/main/java/bpm/document/processing/engine/repository/DocumentProcessingRepository.java,6\2\625d50c9ba0a78cb5fbdbd7de509a8aa31418128

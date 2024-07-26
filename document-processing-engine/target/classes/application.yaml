@@ -1,9 +1,24 @@
-camunda.bpm.admin-user:
-  id: admin
-  password: admin
+
+camunda.bpm:
+  admin-user:
+    id: admin
+    password: admin
+  filter:
+    create: All tasks
 
 server:
   port: 9090
+
+
+
+camunda:
+  bpm:
+    database:
+      schema-update: 'true'
+      schema-name: test
+      table-prefix: test.
+
+
 
 spring:
   jpa:
@@ -11,19 +26,7 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: update
-
-  #    properties:
-  #      hibernate:
-  #        dialect: org.hibernate.dialect.MySQLDialect
-
-  #  database-platform: org.hibernate.dialect.MySQL8Dialect
   datasource:
-    #    driver-class-name: oracle.jdbc.driver.OracleDriver
-    #    username: demo
-    #    url: jdbc:oracle:thin:@localhost:1521:xe
-    #    password: demo123
-
-    #    *******MySql Data Base *******
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     url: jdbc:mysql://localhost:3306/test

@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AssigntaskRequest {
 
-    boolean assigned;
+    boolean assigned = true;
 
 }

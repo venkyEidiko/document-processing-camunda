@@ -23,6 +23,10 @@ public class ProcessService {
         return processRepository.save(processDetails);
     }
 
+    public ProcessDetails getProcessDetails(String processInstanceId){
+        return processRepository.findByProcessInstanceId(processInstanceId);
+    }
+
 
 
 

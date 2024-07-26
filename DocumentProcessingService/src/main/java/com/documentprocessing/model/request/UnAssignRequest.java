@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UnAssignRequest {
 
-    boolean unassigned;
+    boolean unassigned = true;
 
 }

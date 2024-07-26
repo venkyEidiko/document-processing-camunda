@@ -27,9 +27,9 @@ import net.sourceforge.tess4j.TesseractException;
 
 import static org.apache.commons.io.FilenameUtils.getExtension;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @Slf4j
 @RestController
+@CrossOrigin(origins = "http://10.0.2.15:3000/**")
 public class DocumentProcessController {
 	
 	@Autowired
@@ -102,8 +102,12 @@ public class DocumentProcessController {
 
         engineService.startProcess(request, processDetails);
 
-		return null;
+		return "Document Uploaded SuccessFully";
 	}
+
+	@GetMapping("")
+
+
 
 	private String getExtension(String fileName) {
 		return fileName.substring(fileName.lastIndexOf('.'));

@@ -1,17 +1,17 @@
 package com.documentprocessing.service;
 
-import com.documentprocessing.entity.Aadhaar;
 import com.documentprocessing.entity.ProcessDetails;
 import com.documentprocessing.model.camundaVariable.CamundaVariables;
 import com.documentprocessing.model.request.StartProcessRequest;
+import com.documentprocessing.model.request.UnAssignRequest;
 import com.documentprocessing.model.response.StartProcessResponse;
-import com.documentprocessing.repository.DocumentProcessingRepository;
-import com.documentprocessing.repository.ProcessRepository;
+import com.documentprocessing.model.response.TaskCamundaResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -32,7 +32,6 @@ public class EngineService {
     private final ProcessService processService;
 
 
-    @Transactional
     public StartProcessResponse startProcess (StartProcessRequest request,
                                               ProcessDetails processDetails){
         String businessKey = generateBusinessKey();
@@ -47,6 +46,22 @@ public class EngineService {
         processService.saveProcess(response.getId(),processDetails);
         log.info("response from camunda engine {}", response);
         return response;
+    }
+
+    public List<ProcessDetails> getUnassignTask(){
+        TaskCamundaResponse[] response = webClientService.postCall(GET_UNASSIGN_TASK, new UnAssignRequest(), com.documentprocessing.model.response.TaskCamundaResponse[].class);
+        List<ProcessDetails> list = generateProcessDetails(response);
+        return  list;
+    }
+
+    private List<ProcessDetails> generateProcessDetails(TaskCamundaResponse[] response) {
+        ProcessDetails processDetails;
+        List<ProcessDetails> list = new ArrayList<>();
+        for(TaskCamundaResponse task : response){
+            processDetails = processService.getProcessDetails(task.getProcessInstanceId());
+            list.add(processDetails);
+        }
+        return list;
     }
 
     private String generateBusinessKey() {
