@@ -1,10 +1,20 @@
+/* profile.css */
+
 .profile-container {
-    max-width: 600px;
-    margin: 10px auto;
+    display: flex;
+    margin: 20px; 
+    margin-left: 8%;
+    gap: 20px; 
+}
+
+.profile {
+    flex: 1; 
+    max-width: 500px;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    background-color: #f9f9f9;
+    background-color: #bad5fd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .profile-header {
@@ -21,8 +31,8 @@
     height: 150px;
     border-radius: 50%;
     object-fit: cover;
-    border: 5px solid #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 5px solid #333;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .profile-details {
@@ -38,4 +48,28 @@
 
 .profile-details p {
     margin-bottom: 8px;
+}
+
+.image-file {
+    flex: 0 0 500px; 
+    max-width: 900px;
+    border-left: 5px solid #333;
+    padding-left: 20px;
+}
+
+.image-file img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+.select-btn button{
+    padding: 10px 20px;
+    margin-left: 400px;
+    background-color: rgb(52, 52, 252);
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.select-btn button:active{
+    background-color: rgb(22, 22, 207);
 }

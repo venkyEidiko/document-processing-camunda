@@ -1,38 +1,53 @@
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
-import Base from './Base'
-import './profile.css'
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import Base from './Base';
+import './profile.css';
 import ProfileImage from './profileImg.webp';
+import { Button } from 'bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
     const [userData, setUserData] = useState(null);
-    
+    const navigate = useNavigate();
     useEffect(() => {
         const fetchData = async () => {
             const adhaar = 828487733013;
             try {
-                 await axios.get(`http://10.0.0.96:8085/getByAadherNumber/${adhaar}`).then(response=>{
-                    let user=response.data;
+                await axios.get(`http://10.0.0.96:8085/getByAadherNumber/${adhaar}`).then(response => {
+                    let user = response.data;
                     setUserData(user[0]);
-                    console.log('response : ', response.data)
-                 }); 
-              } catch (error) {
+                    console.log('response : ', response.data);
+                });
+            } catch (error) {
                 console.error('Error fetching data:', error);
             }
         };
 
         fetchData();
-    }, [0]); // Dependency array ensures useEffect runs only when adhaar changes
+    }, []);
+
+    const completeTask = async() => {
+      let  url = `localhost:8085/completeTask`
+       let taskId= userData.taskId
+            try {
+                await axios.get(`${url}/${taskId}`).then(response => {
+                    console.log("call to complete task : ")
+                    navigate('/task')
+                    console.log('response : ', response.data);
+                });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+    };
 
     return (
-        <>
-            <Base>
-                <div className="profile-container">
+        <Base>
+            <div className="profile-container">
+                <div className='profile'>
                     <div className="profile-header">
-
                         <img
                             className="profile-image"
-                            src={ProfileImage}                          
+                            src={ProfileImage}
                             alt="Profile"
                         />
                     </div>
@@ -40,19 +55,26 @@ const Profile = () => {
                         {userData && (
                             <div>
                                 <h2>{userData.name}</h2>
-                                <p>Email : johndoe@example.com</p>
-                                <p>AadherNumber : {userData.aadhaarNumber}</p>
-                                <p>D.O.B : {userData.dateOfBirth}</p>
-                                <p>Gender : {userData.gender}</p>
-                                <p>Address : {userData.address}</p>
+                                <p>Email: johndoe@example.com</p>
+                                <p>Aadhaar Number: {userData.aadhaarNumber}</p>
+                                <p>D.O.B: {userData.dateOfBirth}</p>
+                                <p>Gender: {userData.gender}</p>
+                                <p>Address: {userData.address}</p>
                             </div>
+
                         )}
 
                     </div>
+                    <div className='select-btn'>
+                        <button onClick={() => completeTask()}>Select</button>
+                    </div>
                 </div>
-            </Base>
-        </>
-    )
+                <div className='image-file'>
+                    <img src={ProfileImage} alt='file not found' />
+                </div>
+            </div>
+        </Base>
+    );
 }
 
-export default Profile
+export default Profile;

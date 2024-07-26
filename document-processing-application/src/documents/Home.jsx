@@ -1,12 +1,14 @@
-import React from 'react'
-import { useState, useHistory, useNavigate } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFile } from '@fortawesome/free-solid-svg-icons'; // Import the faFile icon
 import Base from './Base';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+
 const Home = () => {
   const [selectedFile, setSelectedFile] = useState(null);
-  const [uploadStatus, setUploadStatus] = useState('');
-  // const history = useHistory();
-  // navigate = useNavigate();
+const navigate = useNavigate()
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
@@ -14,41 +16,65 @@ const Home = () => {
   const handleUpload = async () => {
     try {
       if (!selectedFile) {
-        alert('Please select a file.');
+        toast.error("Please Select File");
         return;
       }
 
       const formData = new FormData();
       formData.append('file', selectedFile);
-      console.log("file entre into handle upload method : ", selectedFile);
-      const response = await axios.post('http://10.0.0.42:8085/uploadDocument', formData, {
+      console.log("file enter into handle upload method: ", selectedFile);
+      const response = await axios.post('http://10.0.0.96:8085/uploadDocument', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-
-      setUploadStatus(response.data.message); // Assuming server returns a message
+      console.log("upload file response : ",response)
+      toast.success(response.data);
+      navigate('/usertask')
     } catch (error) {
       console.error('Error uploading file: ', error);
-
-      setUploadStatus('Failed to upload file.');
-      //history.push('/success');
-      // navigate('/success')
+      toast.error('Failed to upload file.');
     }
   };
+
+  const fileDetails = selectedFile ? (
+    <div>
+      <p><FontAwesomeIcon icon={faFile} /> {selectedFile.name}</p>
+    </div>
+  ) : (
+    <p>No file chosen</p>
+  );
 
   return (
     <>
       <Base>
         <div className='home'>
-          <h2>File Upload</h2>
-          <input type="file" onChange={handleFileChange} />
-          <button onClick={handleUpload}>Upload</button>
-          <p>{uploadStatus}</p>
+        <h2>Document Proccessing </h2>
+          <h3>Upload File</h3>
+          <div className='file-input-wrapper'>
+            <input 
+              type="file" 
+              id="file-upload" 
+              className="file-input" 
+              onChange={handleFileChange}
+            />
+            <label 
+              htmlFor="file-upload" 
+              className="file-input-label"
+            >
+              Choose a file
+            </label>
+          </div>
+          <div className='file-name'>
+            {fileDetails}
+          </div>
+          <div className='home-button'>
+            <button onClick={handleUpload}>Upload</button>
+          </div>
         </div>
       </Base>
     </>
   );
 };
 
-export default Home
+export default Home;
