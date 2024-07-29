@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DocumentProcessingRepository extends JpaRepository<Aadhaar, Integer> {
+    Aadhaar findByBusinessKey(String businessKey);
 
 }

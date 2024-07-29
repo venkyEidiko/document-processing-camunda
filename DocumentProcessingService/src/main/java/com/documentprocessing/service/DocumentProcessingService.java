@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
 
 import com.documentprocessing.dto.AadhaarDto;
 import com.documentprocessing.entity.ProcessDetails;
+
 import com.documentprocessing.repository.ProcessRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,8 +33,12 @@ public class DocumentProcessingService {
 
 	@Autowired
 	private DocumentProcessingRepository documentProcessingRepository;
+
       @Autowired
 	 private ProcessRepository processRepository;
+
+
+
 	public String processAndSaveAadhaarDetails(MultipartFile file) {
 		ITesseract tesseract = new Tesseract();
 		tesseract.setDatapath("tessdata");
@@ -138,8 +143,6 @@ public class DocumentProcessingService {
 		System.out.println("readDocumentAfterResolution :" + result);
 	}
 
-
-
 	public AadhaarDto getByBusinessKey(@PathVariable String businessKey)
 	{
 		Optional<Aadhaar> byBusinessKey = documentProcessingRepository.findByBusinessKey(businessKey);
@@ -160,6 +163,7 @@ public class DocumentProcessingService {
 		AadhaarDto aadhaarDto =new AadhaarDto();
 
 		String base64Image = Base64.getEncoder().encodeToString(byBusinessKey1.get().getFile());
+
 		 aadhaarDto.setAadhaarImage(base64Image);
 		 aadhaarDto.setName(aadhaar.getName());
 		 aadhaarDto.setAadhaarNumber(aadhaar.getAadhaarNumber());

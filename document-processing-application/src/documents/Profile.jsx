@@ -8,18 +8,32 @@ import { toast } from 'react-toastify';
 
 const Profile = () => {
     const [userData, setUserData] = useState(null);
+    const [base64String, setBase64String] = useState(null);
     const navigate = useNavigate();
     const url = `http://localhost:8085/`;
+
     const location = useLocation();
-    const { taskData } = location.state || {}; 
+    const { taskData } = location.state || {};
+    var businessKey = 'DOC3885'
+    if (taskData) {
+        businessKey = taskData.businessKey
+    }
+
     useEffect(() => {
         const fetchData = async () => {
-            const adhaar = 828487733013;
             try {
-                await axios.get(`${url}getByAadherNumber/${adhaar}`).then(response => {
+                await axios.get(`${url}getByBusinesskey/${businessKey}`).then(response => {
                     let user = response.data;
-                    setUserData(user[0]);
+                    setUserData(user);
+                    
                     console.log('response : ', response.data);
+                    if (user.aadhaarImage) {
+                        setBase64String(user.aadhaarImage);
+                    } else {
+                        // Handle case where aadhaarImage is null or undefined
+                        setBase64String(null); // Set base64String to null if image data is missing
+                    }
+                    console.log('response : ', response.data.aadhaarImage);
                 });
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -27,21 +41,21 @@ const Profile = () => {
         };
 
         fetchData();
-    }, [url]);
+    }, [url, businessKey]);
 
-    const completeTask = async() => {
-            try {
-                console.log("Task Id in profile : ",taskData);
-                await axios.get(`${url}completeTask?taskId=${taskData.taskId}`).then(response => {
-                    console.log("call to complete task : ",response)
-                    toast.success("Task completed sucessfully !")
-                    navigate('/task')
-                    console.log('response : ', response.data);
-                });
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                toast.error("Failed to complete the task !")
-            }
+    const completeTask = async () => {
+        try {
+            console.log("Task Id in profile : ", taskData);
+            await axios.get(`${url}completeTask?taskId=${taskData.taskId}`).then(response => {
+                console.log("call to complete task : ", response)
+                toast.success("Task completed sucessfully !")
+                navigate('/task')
+                console.log('response : ', response.data);
+            });
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            toast.error("Failed to complete the task !")
+        }
     };
 
     return (
@@ -56,25 +70,36 @@ const Profile = () => {
                         />
                     </div>
                     <div className="profile-details">
-                        {userData && (
+                        {userData ? (
                             <div>
-                                <h2>{userData.name}</h2>
-                                <p>Email: johndoe@example.com</p>
-                                <p>Aadhaar Number: {userData.aadhaarNumber}</p>
-                                <p>D.O.B: {userData.dateOfBirth}</p>
-                                <p>Gender: {userData.gender}</p>
-                                <p>Address: {userData.address}</p>
+                                <h2>{userData.name ?? '-Not Set-'}</h2>
+                               
+                                <p>Aadhaar Number: {userData.aadhaarNumber ?? '-Not Set-'}</p>
+                                <p>D.O.B: {userData.dateOfBirth ?? 'Not set'}</p>
+                                <p>Gender: {userData.gender ?? '-Not Set-'}</p>
+                                <p>Address: {userData.address ?? '-Not Set-'}</p>
                             </div>
-
+                        ) : (
+                            <div>
+                                <h2>-Not Set-</h2>
+                               
+                                <p>Aadhaar Number: -Not Set-</p>
+                                <p>D.O.B: -Not Set-</p>
+                                <p>Gender: -Not Set-</p>
+                                <p>Address: -Not Set-</p>
+                            </div>
                         )}
-
                     </div>
                     <div className='select-btn'>
                         <button onClick={() => completeTask()}>Select</button>
                     </div>
                 </div>
                 <div className='image-file'>
-                    <img src={ProfileImage} alt='file not found' />
+                    {base64String ? (
+                        <img src={`data:image/png;base64,${base64String}`} alt='User Aadhaar' width="500px" height="600px" />
+                    ) : (
+                        <img src={ProfileImage} alt='Default Profile' />
+                    )}
                 </div>
             </div>
         </Base>

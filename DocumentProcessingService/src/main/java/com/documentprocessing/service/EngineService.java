@@ -58,7 +58,8 @@ public class EngineService {
         List<ProcessDetails> list = new ArrayList<>();
         for(TaskCamundaResponse task : response){
             processDetails = processService.getProcessDetails(task.getProcessInstanceId());
-            if(processDetails.getTaskId()==null || processDetails.equals("")) {
+            System.out.println(processDetails);
+            if(processDetails.getTaskId()==null || processDetails.getTaskId().equals("")) {
                 processDetails.setTaskId(task.getId());
                 processDetails = processService.save(processDetails);
             }
@@ -84,7 +85,7 @@ public class EngineService {
     }
 
     public void completeTask(String taskId){
-        String url = String.format(CLAIM_TASK,taskId);
+        String url = String.format(COMPLETE_TASK,taskId);
         webClientService.postCall(url,new CompleteTaskRequestCamunda(),Object.class);
     }
 

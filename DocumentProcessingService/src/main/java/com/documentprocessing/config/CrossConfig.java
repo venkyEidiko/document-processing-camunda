@@ -12,7 +12,9 @@ public class CrossConfig implements WebMvcConfigurer {
         @Override
         public void addCorsMappings(CorsRegistry registry) {
             registry.addMapping("/**")  // Adjust the path pattern as needed
-             //       .allowedOrigins("*")  // Allow requests from this origin
+
+                    .allowedOrigins("http://localhost:3000")  // Allow requests from this origin
+
                     .allowedMethods("GET", "POST", "PUT", "DELETE")  // Allow these HTTP methods
                     .allowCredentials(true);  // Allow sending credentials like cookies
         }
