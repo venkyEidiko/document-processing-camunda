@@ -1,0 +1,4 @@
+bpm\document\processing\engine\service\DocumentProcess.class
+bpm\document\processing\engine\entity\ProcessDetails.class
+bpm\document\processing\engine\Application.class
+bpm\document\processing\engine\repository\ProcessRepository.class
