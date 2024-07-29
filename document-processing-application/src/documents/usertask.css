@@ -68,3 +68,6 @@ background-color: #5079ff;
 .eye-button{
     cursor: pointer;
 }
+.MuiButtonBase-root.MuiTableSortLabel-root.tss-1ntzg4z-MUIDataTableHeadCell-sortLabelRoot.css-1qgma8u-MuiButtonBase-root-MuiTableSortLabel-root{
+display: none;
+}

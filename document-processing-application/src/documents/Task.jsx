@@ -10,7 +10,7 @@ const Task = () => {
     const [taskData, setTaskData] = useState([]);
     const [tasktype, setTaskType] = useState('unasign');
     const [claimUnClaim, setClaimUnClaim] = useState('Claim');
-    const url = `http://localhost:8085/`
+    const url = `http://localhost:8085/`;
 
     const navigate = useNavigate();
 
