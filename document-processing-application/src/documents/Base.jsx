@@ -4,17 +4,20 @@ import Footer from './Footer'
 
 const Base = ({ Title = "Welcome to Document Proccess Application", children }) => {
     return (
-        <>
-            <div>
-                <Navbar />
+       
+            <div className='base'>
+                <div>
+                    <Navbar />
+                </div>
+                <div className='base-children'>
+                    {children}
+                </div>
+                <div>
+                    <Footer />
+                </div>
+
             </div>
-            <div className='base-children'>
-                {children}
-            </div>
-            <div>
-                <Footer />
-            </div>
-        </>
+      
     )
 }
 
