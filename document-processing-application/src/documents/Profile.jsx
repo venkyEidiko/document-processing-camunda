@@ -3,17 +3,20 @@ import axios from 'axios';
 import Base from './Base';
 import './profile.css';
 import ProfileImage from './profileImg.webp';
-import { Button } from 'bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const Profile = () => {
     const [userData, setUserData] = useState(null);
     const navigate = useNavigate();
+    const url = `http://localhost:8085/`;
+    const location = useLocation();
+    const { taskData } = location.state || {}; 
     useEffect(() => {
         const fetchData = async () => {
             const adhaar = 828487733013;
             try {
-                await axios.get(`http://10.0.0.96:8085/getByAadherNumber/${adhaar}`).then(response => {
+                await axios.get(`${url}getByAadherNumber/${adhaar}`).then(response => {
                     let user = response.data;
                     setUserData(user[0]);
                     console.log('response : ', response.data);
@@ -24,19 +27,20 @@ const Profile = () => {
         };
 
         fetchData();
-    }, []);
+    }, [url]);
 
     const completeTask = async() => {
-      let  url = `localhost:8085/completeTask`
-       let taskId= userData.taskId
             try {
-                await axios.get(`${url}/${taskId}`).then(response => {
-                    console.log("call to complete task : ")
+                console.log("Task Id in profile : ",taskData);
+                await axios.get(`${url}completeTask?taskId=${taskData.taskId}`).then(response => {
+                    console.log("call to complete task : ",response)
+                    toast.success("Task completed sucessfully !")
                     navigate('/task')
                     console.log('response : ', response.data);
                 });
             } catch (error) {
                 console.error('Error fetching data:', error);
+                toast.error("Failed to complete the task !")
             }
     };
 

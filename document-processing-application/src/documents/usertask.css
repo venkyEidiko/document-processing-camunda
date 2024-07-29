@@ -65,3 +65,6 @@ background-color: #5079ff;
 .MuiToolbar-root.MuiToolbar-gutters.MuiToolbar-regular.tss-tlx3x1-MUIDataTableToolbar-root.css-hyum1k-MuiToolbar-root{
     background-color: #5079ff;
 }
+.eye-button{
+    cursor: pointer;
+}

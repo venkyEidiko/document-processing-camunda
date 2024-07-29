@@ -1,39 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Base from './Base';
 import './usertask.css';
 import MUIDataTable from 'mui-datatables';
 import axios from 'axios';
-
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 const Task = () => {
-    const [taskData, setTaskData] = useState(null);
+    const [taskData, setTaskData] = useState([]);
     const [tasktype, setTaskType] = useState('unasign');
     const [claimUnClaim, setClaimUnClaim] = useState('Claim');
+    const url = `http://localhost:8085/`
+
+    const navigate = useNavigate();
+
+    const fetchData = useCallback(async () => {
+        try {
+            const response = await axios.get(tasktype === 'unasign' ? `${url}getUnassignTask` : `${url}getAssignTask`);
+            setTaskData(response.data);
+            console.log('response : ', response.data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }, [tasktype, url]);
 
     useEffect(() => {
-        const fetchData = async () => {
-            const url = tasktype === 'unasign' ? 'http://10.0.0.96:8085/getUnassignTask' : 'http://10.0.0.96:8085/getAssignTask';
-            
-            try {
-                const response = await axios.get(url);
-                setTaskData(response.data);
-                console.log('response : ', response.data);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-
         fetchData();
-    }, [tasktype]);
+    }, [fetchData]);
 
     const columns = [
-        "business Key",
-        "file Name",
-        "State",
-        "file Extension",
+        { name: "businessKey", label: "Business Key", },
+        { name: "fileName", label: "File Name", },
+        { name: "fileSize", label: "File Size", },
+        { name: "fileExtension", label: "File Extension", },
         {
             name: "Actions",
             options: {
-                customBodyRender: (value, tableMeta, updateValue) => (
+                customBodyRender: (value, tableMeta) => (
                     <button className='table-btn' onClick={() => handleButtonClick(tableMeta.rowData)}>
                         {claimUnClaim}
                     </button>
@@ -41,22 +44,55 @@ const Task = () => {
             },
         },
     ];
+    if (tasktype === 'asign') {
+        columns.splice(1, 0, {
+            name: 'view',
+            options: {
+                customBodyRender: (value, tableMeta) => (
+                    <span className='eye-button' onClick={() => { handleEyeButtonClick(tableMeta.rowData) }}><VisibilityIcon /></span>
+                )
+            }
+        })
+    }
 
     const options = {
         filterType: 'checkbox',
         selectableRows: 'none',
-        customBodyRender: (value, tableMeta, updateValue) => {
-            if (taskData && taskData.length === 0) {
-                return (
-                    <div>No tasks available</div>
-                );
-            }
-            return null;
-        }
+        textLabels: {
+            body: {
+                noMatch: "No tasks available",
+            },
+        },
     };
 
     const handleButtonClick = (rowData) => {
         console.log("Button clicked for row:", rowData);
+        taskData.forEach(data => {
+            console.log("if block in handleButtonClick : ", rowData[0], data.bussinessKey);
+            if (rowData[0] === data.businessKey) {
+                let taskId = data.taskId;
+                console.log("taskId : ", taskId);
+                if (claimUnClaim === 'Claim') {
+                    fetch(`${url}claimTask?taskId=${taskId}`).then(res => {
+                        console.log("Claim response : ", res);
+                        fetchData()
+                        toast.success('Task claimed sucessfully !')
+                    }).catch(error => {
+                        console.log("Claim failed error", error)
+                        toast.error('Failed task claim !')
+                    });
+                } else if (claimUnClaim === 'UnClaim') {
+                    fetch(`${url}unClaimTask?taskId=${taskId}`).then(res => {
+                        console.log("UnClaim response : ", res);
+                        fetchData()
+                        toast.success('Task claimed sucessfully !')
+                    }).catch(error => {
+                        console.log("UnClaim failed error", error)
+                        toast.error('Failed task unclaim !')
+                    })
+                }
+            };
+        });
     };
 
     const handleAsignUnAsign = (event) => {
@@ -64,9 +100,18 @@ const Task = () => {
         setClaimUnClaim(event.claimUnClaim);
     };
 
-    // Prepare data for MUIDataTable
-    const preparedData = taskData && taskData.length > 0 ? taskData : [{}, {}, {}, {}]; // Placeholder empty rows
+    const handleEyeButtonClick = (rowData) => {
 
+        console.log("Eye Profile data", rowData)
+        taskData.forEach(data => {
+            console.log("if block in handleEyeButtonClick : ", rowData[0], data.bussinessKey);
+            if (rowData[0] === data.businessKey) {
+                console.log("Eye Profile  full data", data)
+                navigate('/profile', { state: { taskData: data } });
+
+            }
+        });
+    }
     return (
         <Base>
             <div className='userTask-container'>
@@ -81,7 +126,7 @@ const Task = () => {
                 <div className='table-data'>
                     <MUIDataTable
                         title={"Task List"}
-                        data={preparedData}
+                        data={taskData}
                         columns={columns}
                         options={options}
                     />
