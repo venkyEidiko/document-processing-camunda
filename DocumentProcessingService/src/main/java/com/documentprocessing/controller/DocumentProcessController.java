@@ -2,9 +2,14 @@ package com.documentprocessing.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
+import com.documentprocessing.entity.ProcessDetails;
+import com.documentprocessing.model.request.StartProcessRequest;
+import com.documentprocessing.service.EngineService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,14 +24,19 @@ import com.documentprocessing.service.DocumentProcessingService;
 
 import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.tess4j.TesseractException;
-@CrossOrigin(origins = "*", allowedHeaders = "*")
-@Slf4j
 
+import static org.apache.commons.io.FilenameUtils.getExtension;
+
+@Slf4j
 @RestController
+@CrossOrigin(origins = "http://10.0.2.15:3000/**")
 public class DocumentProcessController {
 	
 	@Autowired
 	private DocumentProcessingService documentProcessingService;
+
+    @Autowired
+    private EngineService engineService;
 
 	@PostMapping("/uploadDocument")
 	public ResponseEntity<String> readDocument(@RequestParam("file") MultipartFile file) {
@@ -36,8 +46,7 @@ public class DocumentProcessController {
 		String processAndSaveAadherDetails = documentProcessingService.processAndSaveAadhaarDetails(file);
 		String originalFilename = file.getOriginalFilename();
 		System.out.println("original name "+originalFilename);
-	
-		return ResponseEntity.ok(processAndSaveAadherDetails);
+	    return ResponseEntity.ok(processAndSaveAadherDetails);
 	}
 	
 	@PostMapping("/readDocumentWithResolution")
@@ -59,10 +68,6 @@ public class DocumentProcessController {
 		
 	}
 	
-	
-	
-	
-
 	@GetMapping("/getByAadherNumber/{aadherNumber}")
 	public ResponseEntity<List<Aadhaar>> getByAadherNumber(@PathVariable("aadherNumber") String aadherNumber) {
 
@@ -70,8 +75,68 @@ public class DocumentProcessController {
 		log.info("aadher number :{ }",aadherNumber);
 		List<Aadhaar>list=new ArrayList<>();
 		
-		list.add(new Aadhaar(1, "Narendra reddy pallaki", "828487733013", "07-04-2001", "male", "2-40,west bazar ,marripudi,prakasam,Andhra pradesh ,523 240"));
+		//list.add(new Aadhaar(1, "Narendra reddy pallaki", "828487733013", "07-04-2001", "male", "2-40,west bazar ,marripudi,prakasam,Andhra pradesh ,523 240"));
 		
 		return ResponseEntity.ok(list);
+	}
+
+	@PostMapping("/uploadDocument1")
+	public String uploadDocument(@RequestParam("file") MultipartFile file) throws IOException {
+
+		String size = String.valueOf(file.getSize());
+		String fileName = file.getOriginalFilename();
+		String extension = getExtension(fileName);
+
+		ProcessDetails processDetails = ProcessDetails.builder()
+				.fileSize(size)
+				.fileExtension(extension)
+				.fileName(fileName)
+				.file(file.getBytes())
+				.build();
+
+		StartProcessRequest request = StartProcessRequest.builder()
+                .fileSize(size)
+                .fileExtension(extension)
+                .fileName(fileName)
+                .build();
+
+        engineService.startProcess(request, processDetails);
+
+		return "Document Uploaded SuccessFully";
+	}
+
+	@GetMapping("/getUnassignTask")
+	public List<ProcessDetails> getUnassignTask(){
+		return engineService.getUnassignTask();
+	}
+
+	@GetMapping("/getAssignTask")
+	public List<ProcessDetails> getAssigntask(){
+		return engineService.getassignTask();
+	}
+
+	@GetMapping("/claimTask")
+	public String claimTask(@RequestParam String taskId){
+		engineService.claimTask(taskId);
+		return "Claimed SuccessFully";
+	}
+
+	@GetMapping("/unClaimTask")
+	public String unClaim(@RequestParam String taskId){
+		engineService.unClaimTask(taskId);
+		return "Unclaimed SuccessdFully";
+	}
+
+	@GetMapping("/completeTask")
+	public String completeTask(@RequestParam String taskId){
+		engineService.completeTask(taskId);
+		return "Task Completed SuccessFully";
+	}
+
+
+
+
+	private String getExtension(String fileName) {
+		return fileName.substring(fileName.lastIndexOf('.'));
 	}
 }
