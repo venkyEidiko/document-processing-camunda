@@ -31,7 +31,7 @@ import static org.apache.commons.io.FilenameUtils.getExtension;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins = "http://10.0.2.15:3000/**")
+@CrossOrigin(origins = "*",allowedHeaders = "*")
 public class DocumentProcessController {
 	
 	@Autowired
@@ -146,6 +146,7 @@ public class DocumentProcessController {
    @GetMapping("/getByBusinesskey/{businesskey}")
 	public  ResponseEntity<AadhaarDto>getAadhaarDetailsByBusinesskey(@PathVariable String businesskey)
 	{
+		System.out.println(" Business key : "+businesskey);
 		AadhaarDto byBusinessKey = documentProcessingService.getByBusinessKey(businesskey);
 
            if (byBusinessKey!=null){
