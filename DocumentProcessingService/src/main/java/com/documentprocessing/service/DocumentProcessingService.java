@@ -5,13 +5,19 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 import java.io.File;
 import java.io.IOException;
+import java.util.Base64;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
+import com.documentprocessing.entity.ProcessDetails;
+import com.documentprocessing.model.response.AadhaarDto;
+import com.documentprocessing.repository.ProcessRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.documentprocessing.entity.Aadhaar;
@@ -26,6 +32,8 @@ public class DocumentProcessingService {
 
 	@Autowired
 	private DocumentProcessingRepository documentProcessingRepository;
+	@Autowired
+	private ProcessRepository processRepository;
 
 	public String processAndSaveAadhaarDetails(MultipartFile file) {
 		ITesseract tesseract = new Tesseract();
@@ -130,4 +138,37 @@ public class DocumentProcessingService {
 		String result = tesseract.doOCR(fopimage);
 		System.out.println("readDocumentAfterResolution :" + result);
 	}
+
+
+
+
+	public AadhaarDto getByBusinessKey(@PathVariable String businessKey)
+	{
+		Optional<Aadhaar> byBusinessKey = documentProcessingRepository.findByBusinessKey(businessKey);
+
+
+		if (byBusinessKey.isEmpty()){
+
+			throw  new RuntimeException("Id not found "+businessKey);
+		}
+
+		Aadhaar aadhaar = byBusinessKey.get();
+		Optional<ProcessDetails> byBusinessKey1 = processRepository.findByBusinessKey(businessKey);
+
+		if (byBusinessKey1.isEmpty()){
+
+			throw  new RuntimeException("Id not found "+businessKey);
+		}
+		AadhaarDto aadhaarDto =new AadhaarDto();
+
+		String base64Image = Base64.getEncoder().encodeToString(byBusinessKey1.get().getFile());
+		aadhaarDto.setAadhaarImage(base64Image);
+		aadhaarDto.setName(aadhaar.getName());
+		aadhaarDto.setAadhaarNumber(aadhaar.getAadhaarNumber());
+		aadhaarDto.setGender(aadhaar.getGender());
+		aadhaarDto.setDateOfBirth(aadhaar.getDateOfBirth());
+
+		return aadhaarDto;
+	}
+
 }

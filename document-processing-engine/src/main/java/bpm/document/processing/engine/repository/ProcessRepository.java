@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface ProcessRepository extends JpaRepository<ProcessDetails, Integer> {
 
-    Optional<ProcessDetails> findByBusinessKey(String businessKey);
+    ProcessDetails findByBusinessKey(String businessKey);
 }
