@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+import com.documentprocessing.dto.AadhaarDto;
 import com.documentprocessing.entity.ProcessDetails;
 import com.documentprocessing.model.request.StartProcessRequest;
 import com.documentprocessing.service.EngineService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -139,4 +141,28 @@ public class DocumentProcessController {
 	private String getExtension(String fileName) {
 		return fileName.substring(fileName.lastIndexOf('.'));
 	}
+
+
+   @GetMapping("/getByBusinesskey/{businesskey}")
+	public  ResponseEntity<AadhaarDto>getAadhaarDetailsByBusinesskey(@PathVariable String businesskey)
+	{
+		AadhaarDto byBusinessKey = documentProcessingService.getByBusinessKey(businesskey);
+
+           if (byBusinessKey!=null){
+
+			   return ResponseEntity.ok(byBusinessKey);
+
+		   }else {
+
+			   throw  new RuntimeException("Invalid data");
+		   }
+
+
+	}
+
+
+
+
+
+
 }
