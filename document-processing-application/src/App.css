@@ -93,6 +93,22 @@
   background-color: rgb(82, 82, 243);
 }
 
+/* loader section */
+.loader-container {
+  position: relative;
+  text-align: center;
+}
+
+.loader-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(182, 180, 180, 0.7); /* Semi-transparent white background */
+  backdrop-filter: blur(5px); /* Adjust blur strength as needed */
+}
+
 /* Navbar section */
 
 .navbar-container{

@@ -7,9 +7,12 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 const Task = () => {
+    
     const [taskData, setTaskData] = useState([]);
     const [tasktype, setTaskType] = useState('unasign');
     const [claimUnClaim, setClaimUnClaim] = useState('Claim');
+    const [activebtn, setActivebtn] = useState('unasign');
+    const [title,setTitle]=useState("Unasign Task List")
     const url = `http://localhost:8085/`;
 
     const navigate = useNavigate();
@@ -98,6 +101,10 @@ const Task = () => {
     const handleAsignUnAsign = (event) => {
         setTaskType(event.tasktype);
         setClaimUnClaim(event.claimUnClaim);
+        setTitle(event.title);
+        setActivebtn(event.tasktype);
+     
+       
     };
 
     const handleEyeButtonClick = (rowData) => {
@@ -112,20 +119,22 @@ const Task = () => {
             }
         });
     }
+
+  
     return (
         <Base>
             <div className='userTask-container'>
                 <div className='userTask-button'>
                     <div className='unasign-btn'>
-                        <button onClick={() => handleAsignUnAsign({ tasktype: 'unasign', claimUnClaim: 'Claim' })}>UnAssign</button>
+                        <button className={activebtn ==='unasign' ? 'active' : ''} onClick={() => handleAsignUnAsign({ tasktype: 'unasign', claimUnClaim: 'Claim',title:'Unasign Task List' })}>UnAssigned</button>
                     </div>
                     <div className='asign-btn'>
-                        <button onClick={() => handleAsignUnAsign({ tasktype: 'asign', claimUnClaim: 'UnClaim' })}>Assign</button>
+                        <button className={activebtn ==='asign'  ? 'active' : '' } onClick={() => handleAsignUnAsign({ tasktype: 'asign', claimUnClaim: 'UnClaim',title:'Asigned Task List'  })}>Assigned</button>
                     </div>
                 </div>
                 <div className='table-data'>
                     <MUIDataTable
-                        title={"Task List"}
+                        title={title}
                         data={taskData}
                         columns={columns}
                         options={options}

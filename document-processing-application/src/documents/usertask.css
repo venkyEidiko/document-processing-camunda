@@ -16,7 +16,7 @@
     font-size: 20px;
     color: #fff;
 }
-.unasign-btn button:active{
+.unasign-btn button.active{
     background-color: #1a36d4;
 }
 .asign-btn button{
@@ -29,9 +29,11 @@
     font-size: 20px;
     color: #fff;
 }
-.asign-btn button:active{  
+.asign-btn button.active{  
    background-color: #1a36d4;
+   
 }
+
 .table-data{
     margin-top: 30px;
     margin-left: 8%;

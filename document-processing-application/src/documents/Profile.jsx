@@ -25,7 +25,7 @@ const Profile = () => {
                 await axios.get(`${url}getByBusinesskey/${businessKey}`).then(response => {
                     let user = response.data;
                     setUserData(user);
-                    
+
                     console.log('response : ', response.data);
                     if (user.aadhaarImage) {
                         setBase64String(user.aadhaarImage);
@@ -57,7 +57,9 @@ const Profile = () => {
             toast.error("Failed to complete the task !")
         }
     };
-
+const backToTask=()=>{
+    navigate('/task');
+}
     return (
         <Base>
             <div className="profile-container">
@@ -73,7 +75,7 @@ const Profile = () => {
                         {userData ? (
                             <div>
                                 <h2>{userData.name ?? '-Not Set-'}</h2>
-                               
+
                                 <p>Aadhaar Number: {userData.aadhaarNumber ?? '-Not Set-'}</p>
                                 <p>D.O.B: {userData.dateOfBirth ?? 'Not set'}</p>
                                 <p>Gender: {userData.gender ?? '-Not Set-'}</p>
@@ -82,7 +84,7 @@ const Profile = () => {
                         ) : (
                             <div>
                                 <h2>-Not Set-</h2>
-                               
+
                                 <p>Aadhaar Number: -Not Set-</p>
                                 <p>D.O.B: -Not Set-</p>
                                 <p>Gender: -Not Set-</p>
@@ -90,8 +92,13 @@ const Profile = () => {
                             </div>
                         )}
                     </div>
-                    <div className='select-btn'>
-                        <button onClick={() => completeTask()}>Select</button>
+                    <div className='profile-btn'>
+                        <div className='select-btn'>
+                            <button onClick={() => completeTask()}>Completed</button>
+                        </div>
+                        <div className='back-btn'>
+                            <button onClick={() => backToTask()}>Back</button>
+                        </div>
                     </div>
                 </div>
                 <div className='image-file'>
