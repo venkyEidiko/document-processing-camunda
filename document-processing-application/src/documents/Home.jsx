@@ -19,11 +19,11 @@ const navigate = useNavigate()
         toast.error("Please Select File");
         return;
       }
-      const url=`http://10.0.0.96:8085/`;
+      const url = `http://localhost:8085/`;
       const formData = new FormData();
       formData.append('file', selectedFile);
       console.log("file enter into handle upload method: ", selectedFile);
-      const response = await axios.post( `${url}uploadDocument`, formData, {
+      const response = await axios.post( `${url}uploadDocument1`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

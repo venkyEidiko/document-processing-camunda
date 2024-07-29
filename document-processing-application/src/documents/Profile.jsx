@@ -8,9 +8,9 @@ import { toast } from 'react-toastify';
 
 const Profile = () => {
     const [userData, setUserData] = useState(null);
-    const [base64String, setBase64String] = useState('');
+    const [base64String, setBase64String] = useState(null);
     const navigate = useNavigate();
-    const url = `http://10.0.0.96:8085/`;
+    const url = `http://localhost:8085/`;
 
     const location = useLocation();
     const { taskData } = location.state || {};
@@ -24,9 +24,16 @@ const Profile = () => {
             try {
                 await axios.get(`${url}getByBusinesskey/${businessKey}`).then(response => {
                     let user = response.data;
-                    setUserData(user[0]);
-                    setBase64String(user.aadhaarImage)
+                    setUserData(user);
+                    
                     console.log('response : ', response.data);
+                    if (user.aadhaarImage) {
+                        setBase64String(user.aadhaarImage);
+                    } else {
+                        // Handle case where aadhaarImage is null or undefined
+                        setBase64String(null); // Set base64String to null if image data is missing
+                    }
+                    console.log('response : ', response.data.aadhaarImage);
                 });
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -66,7 +73,7 @@ const Profile = () => {
                         {userData ? (
                             <div>
                                 <h2>{userData.name ?? '-Not Set-'}</h2>
-                                <p>Email: {userData.email ?? '-Not Set-'}</p>
+                               
                                 <p>Aadhaar Number: {userData.aadhaarNumber ?? '-Not Set-'}</p>
                                 <p>D.O.B: {userData.dateOfBirth ?? 'Not set'}</p>
                                 <p>Gender: {userData.gender ?? '-Not Set-'}</p>
@@ -75,7 +82,7 @@ const Profile = () => {
                         ) : (
                             <div>
                                 <h2>-Not Set-</h2>
-                                <p>Email: -Not Set-</p>
+                               
                                 <p>Aadhaar Number: -Not Set-</p>
                                 <p>D.O.B: -Not Set-</p>
                                 <p>Gender: -Not Set-</p>
@@ -89,9 +96,9 @@ const Profile = () => {
                 </div>
                 <div className='image-file'>
                     {base64String ? (
-                        <img src={base64String} alt='File not found' />
+                        <img src={`data:image/png;base64,${base64String}`} alt='User Aadhaar' width="500px" height="600px" />
                     ) : (
-                        <img src={ProfileImage} alt='File not found' />
+                        <img src={ProfileImage} alt='Default Profile' />
                     )}
                 </div>
             </div>
