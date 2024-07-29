@@ -30,7 +30,7 @@ const navigate = useNavigate()
       });
       console.log("upload file response : ",response)
       toast.success(response.data);
-      navigate('/usertask')
+      navigate('/task')
     } catch (error) {
       console.error('Error uploading file: ', error);
       toast.error('Failed to upload file.');
