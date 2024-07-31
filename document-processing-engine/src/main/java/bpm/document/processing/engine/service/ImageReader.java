@@ -1,20 +1,27 @@
 package bpm.document.processing.engine.service;
 
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.imageio.ImageIO;
+
+import org.springframework.stereotype.Service;
+
 import bpm.document.processing.engine.entity.Aadhaar;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.ConvolveOp;
-import java.awt.image.Kernel;
-import java.io.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class ImageReader {
@@ -31,8 +38,10 @@ public class ImageReader {
         BufferedImage contrastedImage = enhanceContrast(filteredImage);
 
         // Save preprocessed image
-        File preprocessedImageFile = new File("C:\\Users\\Sreenivas Bandaru\\Pictures\\Screenshots\\aadhaar.jpeg");
-        ImageIO.write(contrastedImage, "jpg", preprocessedImageFile);
+      //  File preprocessedImageFile = new File("C:\\Users\\Sreenivas Bandaru\\Pictures\\Screenshots\\aadhaar.jpeg");
+       // ImageIO.write(contrastedImage, "jpg", preprocessedImageFile);
+        Path tempImageFile = Files.createTempFile("aadhaar", ".jpeg");
+        ImageIO.write(contrastedImage, "jpg", tempImageFile.toFile());
 
         // Initialize Tesseract OCR
         ITesseract tesseract = new Tesseract();
@@ -40,7 +49,7 @@ public class ImageReader {
         tesseract.setLanguage("eng+tel+hin");
 
         // Perform OCR
-        String text = tesseract.doOCR(preprocessedImageFile);
+        String text = tesseract.doOCR(tempImageFile.toFile());
 
         // Process extracted text
         String filterText = processText(text);
@@ -48,14 +57,8 @@ public class ImageReader {
 
         // Optional: Extract details from filtered text
          Aadhaar details = extractDetails(filterText);
-         System.out.println("Details : -------" + details);
-
-        // Write the extracted text to a file
-        try (FileWriter fileWriter = new FileWriter("C:\\Users\\Sreenivas Bandaru\\Pictures\\Screenshots\\aadhaar.txt");
-             BufferedWriter bufferWriter = new BufferedWriter(fileWriter)) {
-            bufferWriter.write(text);
-        }
-
+         System.out.println("Aadhaar Details :" + details);
+         Files.deleteIfExists(tempImageFile);
         return details;
     }
     

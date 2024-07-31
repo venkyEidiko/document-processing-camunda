@@ -50,8 +50,6 @@ public class DocumentProcessingService {
 			System.out.println("Extracted Aadhaar data: " + text);
 
 			Aadhaar aadhaar = parseTextToAadhaar(text);
-			// documentProcessingRepository.save(aadhaar);
-
 			return "Details saved successfully!";
 		} catch (TesseractException | IOException e) {
 			e.printStackTrace();
