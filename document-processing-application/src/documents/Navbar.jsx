@@ -22,16 +22,16 @@ const Navbar = () => {
 
           <div className='navField'>
             <NavLink>
-              <Link to='/profile'>Profile</Link>
+              <Link to='/task'>User Task</Link>
             </NavLink>
           </div>
 
           <div className='navField'>
             <NavLink>
-              <Link to='/task'>User Task</Link>
+              <Link to='/profile'>Profile</Link>
             </NavLink>
           </div>
-
+          
         </div>
       </div>
     </>
