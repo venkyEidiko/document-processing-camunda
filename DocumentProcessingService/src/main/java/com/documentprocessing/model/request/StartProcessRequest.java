@@ -1,7 +1,6 @@
 package com.documentprocessing.model.request;
 
-import com.documentprocessing.model.camundaVariable.CamundaChildVariables;
-import com.documentprocessing.model.camundaVariable.CamundaVariables;
+import com.documentprocessing.model.camundavariable.CamundaChildVariables;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

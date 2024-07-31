@@ -9,5 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface DocumentProcessingRepository extends JpaRepository<Aadhaar, Integer> {
+
     Optional<Aadhaar> findByBusinessKey(String businessKey);
+
 }

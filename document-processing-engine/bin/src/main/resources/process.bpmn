@@ -11,19 +11,6 @@
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="Flow_0a7pyth" sourceRef="say-hello" targetRef="Activity_05uetg7" />
     <bpmn:userTask id="Activity_05uetg7">
-      <bpmn:extensionElements>
-        <camunda:formData>
-          <camunda:formField id="name" label="Name" type="string" />
-          <camunda:formField id="DateOfBirth" label="Date Of Birth" type="string" />
-          <camunda:formField id="gender" label="Gender" type="string" />
-          <camunda:formField id="aadhaarNumber" label="Aadhar Number" type="string">
-            <camunda:properties />
-            <camunda:validation />
-          </camunda:formField>
-          <camunda:formField id="vid" label="VID" type="string" />
-          <camunda:formField id="address" label="Address" type="string" />
-        </camunda:formData>
-      </bpmn:extensionElements>
       <bpmn:incoming>Flow_0a7pyth</bpmn:incoming>
       <bpmn:outgoing>Flow_1iegxoc</bpmn:outgoing>
     </bpmn:userTask>
