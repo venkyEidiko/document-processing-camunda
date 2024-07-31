@@ -17,3 +17,5 @@ p
 Ysrc/main/java/bpm/document/processing/engine/repository/DocumentProcessingRepository.java,6\2\625d50c9ba0a78cb5fbdbd7de509a8aa31418128
 u
 Esrc/main/java/bpm/document/processing/engine/service/ImageReader.java,1\e\1efd2a4affcb79659f7361a994788592702b32e2
+S
+#src/main/resources/application.yaml,8\b\8bf9a0c76cee89021a19081a2d70237db7e2fd8a

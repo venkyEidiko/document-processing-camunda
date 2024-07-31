@@ -13,16 +13,14 @@ public class WebClientService {
     private final WebClient webClient;
 
     public <T> T[] postCallForArray(String url, Object data, Class<T[]> arrayType) {
-        T[] responseArray = this.webClient.post()
+
+
+        return this.webClient.post()
                 .uri(url)
                 .body(Mono.just(data), data.getClass())
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, response -> {
-            return Mono.error(new Exception("Failed to call API: " + response.statusCode()));
-        })
+                .onStatus(HttpStatusCode::isError, response -> Mono.error(new Exception("Failed to call API: " + response.statusCode())))
                 .bodyToMono(arrayType).block();
-
-        return responseArray;
     }
 
     public <T> T postCall(String url, Object data, Class<T> responseType) {
@@ -30,9 +28,7 @@ public class WebClientService {
                 .uri(url)
                 .body(Mono.just(data), data.getClass())
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, result -> {
-            return Mono.error(new Exception("Failed to call an API"));
-        })
+                .onStatus(HttpStatusCode::isError, result -> Mono.error(new Exception("Failed to call an API")))
                 .bodyToMono(responseType);
 
         return response.block();
@@ -42,9 +38,9 @@ public class WebClientService {
         this.webClient.post()
                 .uri(url)
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, result -> {
-            return Mono.error(new Exception("Failed to call an API"));
-        })
-                .toBodilessEntity().block();
+                .onStatus(HttpStatusCode::isError, result -> Mono.error(new Exception("Failed to call an API")))
+                .toBodilessEntity()
+                .block();
     }
+
 }
