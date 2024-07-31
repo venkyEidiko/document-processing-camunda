@@ -1,6 +1,5 @@
 package com.documentprocessing.repository;
 
-import com.documentprocessing.entity.Aadhaar;
 import com.documentprocessing.entity.ProcessDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 

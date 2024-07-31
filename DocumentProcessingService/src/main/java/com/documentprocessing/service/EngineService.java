@@ -1,7 +1,7 @@
 package com.documentprocessing.service;
 
 import com.documentprocessing.entity.ProcessDetails;
-import com.documentprocessing.model.camundaVariable.CamundaVariables;
+import com.documentprocessing.model.camundavariable.CamundaVariables;
 import com.documentprocessing.model.request.*;
 import com.documentprocessing.model.response.StartProcessResponse;
 import com.documentprocessing.model.response.TaskCamundaResponse;
@@ -18,12 +18,13 @@ import java.util.Random;
 @Slf4j
 public class EngineService {
 
-    public static String START_PROCESS_URL = "/process-definition/key/document-processing-engine-process/start";
-    public static  String GET_UNASSIGN_TASK = "/task";
-    public static String CLAIM_TASK = "/task/%s/claim";
-    public static String UNCLAIM_TASK = "/task/%s/unclaim";
-    public static String TASK_COUNT = "/history/task/count?taskAssignee=admin";
-    public static String COMPLETE_TASK = "/task/%s/complete";
+    private   Random random = new Random();
+    public static final String START_PROCESS_URL = "/process-definition/key/document-processing-engine-process/start";
+    public static final String GET_UNASSIGN_TASK = "/task";
+    public static final String CLAIM_TASK = "/task/%s/claim";
+    public static final String UNCLAIM_TASK = "/task/%s/unclaim";
+    public static final String TASK_COUNT = "/history/task/count?taskAssignee=admin";
+    public static final String COMPLETE_TASK = "/task/%s/complete";
 
 
     private final WebClientService webClientService;
@@ -49,8 +50,8 @@ public class EngineService {
 
     public List<ProcessDetails> getUnassignTask(){
         TaskCamundaResponse[] response = webClientService.postCall(GET_UNASSIGN_TASK, new UnAssignRequest(), com.documentprocessing.model.response.TaskCamundaResponse[].class);
-        List<ProcessDetails> list = generateProcessDetails(response);
-        return  list;
+
+        return generateProcessDetails(response);
     }
 
     private List<ProcessDetails> generateProcessDetails(TaskCamundaResponse[] response) {
@@ -58,7 +59,8 @@ public class EngineService {
         List<ProcessDetails> list = new ArrayList<>();
         for(TaskCamundaResponse task : response){
             processDetails = processService.getProcessDetails(task.getProcessInstanceId());
-            System.out.println(processDetails);
+
+            log.info("processDetails : {} ",processDetails);
             if(processDetails.getTaskId()==null || processDetails.getTaskId().equals("")) {
                 processDetails.setTaskId(task.getId());
                 processDetails = processService.save(processDetails);
@@ -70,8 +72,8 @@ public class EngineService {
 
     public List<ProcessDetails> getassignTask(){
         TaskCamundaResponse[] response = webClientService.postCall(GET_UNASSIGN_TASK, new AssigntaskRequest(), com.documentprocessing.model.response.TaskCamundaResponse[].class);
-        List<ProcessDetails> list = generateProcessDetails(response);
-        return list;
+
+        return generateProcessDetails(response);
     }
 
     public void claimTask(String taskId){
@@ -91,9 +93,8 @@ public class EngineService {
 
 
     private String generateBusinessKey() {
-        Random random = new Random();
-        int randomNumber = random.nextInt(9000) + 1000;
-        return "DOC" + randomNumber;
+
+        return "DOC" + this.random.nextInt(9000) + 1000;
     }
 
 

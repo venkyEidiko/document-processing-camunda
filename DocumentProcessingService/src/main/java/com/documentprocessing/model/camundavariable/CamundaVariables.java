@@ -1,4 +1,4 @@
-package com.documentprocessing.model.camundaVariable;
+package com.documentprocessing.model.camundavariable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

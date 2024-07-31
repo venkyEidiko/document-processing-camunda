@@ -37,9 +37,6 @@ public class ImageReader {
         BufferedImage filteredImage = applyMedianFilter(image);
         BufferedImage contrastedImage = enhanceContrast(filteredImage);
 
-        // Save preprocessed image
-      //  File preprocessedImageFile = new File("C:\\Users\\Sreenivas Bandaru\\Pictures\\Screenshots\\aadhaar.jpeg");
-       // ImageIO.write(contrastedImage, "jpg", preprocessedImageFile);
         Path tempImageFile = Files.createTempFile("aadhaar", ".jpeg");
         ImageIO.write(contrastedImage, "jpg", tempImageFile.toFile());
 
