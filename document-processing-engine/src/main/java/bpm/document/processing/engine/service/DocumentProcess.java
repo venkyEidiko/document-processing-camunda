@@ -18,7 +18,7 @@ public class DocumentProcess implements JavaDelegate {
     private final ImageReader imageReader;
     private final DocumentProcessingRepository docRepository;
 
-    @Autowired
+    
     public DocumentProcess(ProcessRepository processRepository,
                            ImageReader imageReader,
                            DocumentProcessingRepository docRepository) {
@@ -43,7 +43,7 @@ public class DocumentProcess implements JavaDelegate {
         aadharB.setVid(aadhaar.getVid());
         docRepository.save(aadharB);
         delegateExecution.setVariable("name", aadharB.getName());
-        delegateExecution.setVariable("dateOfBirth",aadharB.getDateOfBirth());
+        delegateExecution.setVariable("DateOfBirth",aadharB.getDateOfBirth());
         delegateExecution.setVariable("gender", aadharB.getGender());
         delegateExecution.setVariable("aadhaarNumber", aadharB.getAadhaarNumber());
         delegateExecution.setVariable("vid", aadharB.getVid());

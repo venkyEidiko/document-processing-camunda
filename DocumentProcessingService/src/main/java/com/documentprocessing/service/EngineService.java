@@ -94,7 +94,7 @@ public class EngineService {
 
     private String generateBusinessKey() {
 
-        return "DOC" + this.random.nextInt(9000) + 1000;
+        return "DOC" + (this.random.nextInt(9000) + 1000);
     }
 
 

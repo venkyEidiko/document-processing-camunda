@@ -11,8 +11,6 @@ import com.documentprocessing.entity.ProcessDetails;
 import com.documentprocessing.model.request.StartProcessRequest;
 import com.documentprocessing.service.EngineService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +23,7 @@ import com.documentprocessing.service.DocumentProcessingService;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "http://localhost:3000/**")
 public class DocumentProcessController {
 
 	private final DocumentProcessingService documentProcessingService;
@@ -45,6 +43,7 @@ public class DocumentProcessController {
 		try {
 			size = String.valueOf(file.getSize());
 			extension = getExtension(file.getOriginalFilename());
+			fileName = file.getOriginalFilename();
 
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -53,8 +52,8 @@ public class DocumentProcessController {
 		ProcessDetails processDetails = ProcessDetails.builder().fileSize(size).fileExtension(extension)
 				.fileName(fileName).file(file.getBytes()).build();
 
-		StartProcessRequest request = StartProcessRequest.builder().fileSize(size).fileExtension(extension)
-				.fileName(fileName).build();
+		StartProcessRequest request = StartProcessRequest.builder().size(size).extension(extension)
+				.name(fileName).build();
 
 		engineService.startProcess(request, processDetails);
 
@@ -98,7 +97,7 @@ public class DocumentProcessController {
 
 		if (byBusinessKey != null) {
 
-			return new ResponseEntity<AadhaarDto>(byBusinessKey, HttpStatus.OK);
+			return  ResponseEntity.ok(byBusinessKey);
 
 		} else {
 			throw new InvalidDataException("Invalid data");
