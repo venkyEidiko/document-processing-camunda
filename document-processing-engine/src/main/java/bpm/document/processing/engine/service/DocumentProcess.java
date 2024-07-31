@@ -48,7 +48,6 @@ public class DocumentProcess implements JavaDelegate {
         delegateExecution.setVariable("aadhaarNumber", aadharB.getAadhaarNumber());
         delegateExecution.setVariable("vid", aadharB.getVid());
         delegateExecution.setVariable("address",aadharB.getAddress());
-
         log.info("Document processing ends");
 
     }
