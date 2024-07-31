@@ -16,7 +16,10 @@
           <camunda:formField id="name" label="Name" type="string" />
           <camunda:formField id="DateOfBirth" label="Date Of Birth" type="string" />
           <camunda:formField id="gender" label="Gender" type="string" />
-          <camunda:formField id="aadhaarNumber" label="Aadhar Number" type="string" />
+          <camunda:formField id="aadhaarNumber" label="Aadhar Number" type="string">
+            <camunda:properties />
+            <camunda:validation />
+          </camunda:formField>
           <camunda:formField id="vid" label="VID" type="string" />
           <camunda:formField id="address" label="Address" type="string" />
         </camunda:formData>

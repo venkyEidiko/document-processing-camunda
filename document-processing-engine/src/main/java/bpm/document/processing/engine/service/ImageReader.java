@@ -4,10 +4,9 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
-import java.io.BufferedWriter;
+
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileWriter;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,157 +18,162 @@ import javax.imageio.ImageIO;
 import org.springframework.stereotype.Service;
 
 import bpm.document.processing.engine.entity.Aadhaar;
+import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 
 @Service
+@Slf4j
 public class ImageReader {
 
-    public Aadhaar readImg(byte[] file) throws IOException, TesseractException {
-        // Load image
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(file);
+	public Aadhaar readImg(byte[] file) throws IOException, TesseractException {
+		// Load image
+		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(file);
 
-        // Load image
-        BufferedImage image = ImageIO.read(byteArrayInputStream);
+		// Load image
+		BufferedImage image = ImageIO.read(byteArrayInputStream);
 
-        // Preprocess image
-        BufferedImage filteredImage = applyMedianFilter(image);
-        BufferedImage contrastedImage = enhanceContrast(filteredImage);
+		// Preprocess image
+		BufferedImage filteredImage = applyMedianFilter(image);
+		BufferedImage contrastedImage = enhanceContrast(filteredImage);
 
-        Path tempImageFile = Files.createTempFile("aadhaar", ".jpeg");
-        ImageIO.write(contrastedImage, "jpg", tempImageFile.toFile());
+		// Save preprocessed image
 
-        // Initialize Tesseract OCR
-        ITesseract tesseract = new Tesseract();
-        tesseract.setDatapath("tessdata");
-        tesseract.setLanguage("eng+tel+hin");
+		Path tempImageFile = Files.createTempFile("aadhaar", ".jpeg");
+		ImageIO.write(contrastedImage, "jpg", tempImageFile.toFile());
 
-        // Perform OCR
-        String text = tesseract.doOCR(tempImageFile.toFile());
+		// Initialize Tesseract OCR
+		ITesseract tesseract = new Tesseract();
+		tesseract.setDatapath("tessdata");
+		tesseract.setLanguage("eng+tel+hin");
 
-        // Process extracted text
-        String filterText = processText(text);
-        System.out.println("English text :"+filterText);
+		// Perform OCR
+		String text = tesseract.doOCR(tempImageFile.toFile());
 
-        // Optional: Extract details from filtered text
-         Aadhaar details = extractDetails(filterText);
-         System.out.println("Aadhaar Details :" + details);
-         Files.deleteIfExists(tempImageFile);
-        return details;
-    }
-    
+		// Process extracted text
+		String filterText = processText(text);
+		log.info("English text : {}", filterText);
 
-    // Method to apply median filter for noise removal
-    public static Aadhaar extractDetails(String text) {
-        Aadhaar aadhaar = new Aadhaar();
+		// Optional: Extract details from filtered text
+		Aadhaar details = extractDetails(filterText);
 
-        // Define patterns
-        String[] lines = text.split("\\R");
+		log.info("Details : ------- {}", details);
+		// Write the extracted text to a file
+		Files.deleteIfExists(tempImageFile);
 
-        Pattern dobPattern = Pattern.compile("(\\d{2}/\\d{2}/\\d{4}|\\d{2}-\\d{2}-\\d{4})");
-        Pattern genderPattern = Pattern.compile("MALE|FEMALE|TRANSGENDER", Pattern.CASE_INSENSITIVE);
-        Pattern aadhaarNumberPattern = Pattern.compile("\\b\\d{4} \\d{4} \\d{4}\\b");
-        Pattern vidPattern = Pattern.compile("VID (\\d{4} \\d{4} \\d{4} \\d{4})");
+		return details;
+	}
 
+	// Method to apply median filter for noise removal
+	public static Aadhaar extractDetails(String text) {
+		Aadhaar aadhaar = new Aadhaar();
 
-        String dobLine = null;
-        int dobIndex = -1;
+		// Define patterns
+		String[] lines = text.split("\\R");
 
-        // Find the line with date of birth
-        for (int i = 0; i < lines.length; i++) {
-            Matcher dobMatcher = dobPattern.matcher(lines[i]);
-            if (dobMatcher.find()) {
-                dobLine = lines[i];
-                dobIndex = i;
-                aadhaar.setDateOfBirth(dobMatcher.group());
-                break;
-            }
-        }
+		Pattern dobPattern = Pattern.compile("(\\d{2}/\\d{2}/\\d{4}|\\d{2}-\\d{2}-\\d{4})");
+		Pattern genderPattern = Pattern.compile("MALE|FEMALE|TRANSGENDER", Pattern.CASE_INSENSITIVE);
+		Pattern aadhaarNumberPattern = Pattern.compile("\\b\\d{4} \\d{4} \\d{4}\\b");
+		Pattern vidPattern = Pattern.compile("VID (\\d{4} \\d{4} \\d{4} \\d{4})");
 
-        // Extract the name from the line above the date of birth line
-        if (dobIndex > 0) {
-            String nameLine = lines[dobIndex - 1];
-            aadhaar.setName(nameLine.trim());
-        }
+		int dobIndex = -1;
 
-        // Find and set other details
-        for (String line : lines) {
-            Matcher genderMatcher = genderPattern.matcher(line);
-            if (genderMatcher.find()) {
-                aadhaar.setGender(genderMatcher.group());
-            }
+		// Find the line with date of birth
+		for (int i = 0; i < lines.length; i++) {
+			Matcher dobMatcher = dobPattern.matcher(lines[i]);
+			if (dobMatcher.find()) {
+				dobIndex = i;
+				aadhaar.setDateOfBirth(dobMatcher.group());
+				break;
+			}
+		}
 
-            Matcher aadhaarNumberMatcher = aadhaarNumberPattern.matcher(line);
-            if (aadhaarNumberMatcher.find() && aadhaar.getAadhaarNumber()==null) {
-                aadhaar.setAadhaarNumber(aadhaarNumberMatcher.group().replaceAll(" ", ""));
-            }
+		// Extract the name from the line above the date of birth line
+		if (dobIndex > 0) {
+			String nameLine = lines[dobIndex - 1];
+			aadhaar.setName(nameLine.trim());
+		}
 
-            Matcher vidMatcher = vidPattern.matcher(line);
-            if (vidMatcher.find()) {
-                aadhaar.setVid(vidMatcher.group(1).replaceAll(" ", ""));
-            }
+		// Find and set other details
+		for (String line : lines) {
+			Matcher genderMatcher = genderPattern.matcher(line);
+			if (genderMatcher.find()) {
+				aadhaar.setGender(genderMatcher.group());
+			}
 
-        }
+			Matcher aadhaarNumberMatcher = aadhaarNumberPattern.matcher(line);
+			if (aadhaarNumberMatcher.find() && aadhaar.getAadhaarNumber() == null) {
+				aadhaar.setAadhaarNumber(aadhaarNumberMatcher.group().replace(" ", ""));
+			}
 
-        return aadhaar;
-    }
-    private BufferedImage applyMedianFilter(BufferedImage image) {
-        // Median filter kernel size
-    	   int kernelSize = 3;
-           float[] kernel = new float[kernelSize * kernelSize];
-           for (int i = 0; i < kernel.length; i++) {
-               kernel[i] = 1.0f / (kernelSize * kernelSize);
-           }
+			Matcher vidMatcher = vidPattern.matcher(line);
+			if (vidMatcher.find()) {
+				aadhaar.setVid(vidMatcher.group(1).replace(" ", ""));
+			}
 
-        // Create convolution kernel
-        Kernel convolutionKernel = new Kernel(kernelSize, kernelSize, kernel);
-        ConvolveOp convolveOp = new ConvolveOp(convolutionKernel, ConvolveOp.EDGE_NO_OP, null);
+		}
 
-        // Apply the filter to the image
-        BufferedImage result = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
-        convolveOp.filter(image, result);
+		return aadhaar;
+	}
 
-        return result;
-    }
+	private BufferedImage applyMedianFilter(BufferedImage image) {
+		// Median filter kernel size
+		int kernelSize = 3;
+		float[] kernel = new float[kernelSize * kernelSize];
+		for (int i = 0; i < kernel.length; i++) {
+			kernel[i] = 1.0f / (kernelSize * kernelSize);
+		}
 
-    // Method to enhance contrast
-    private BufferedImage enhanceContrast(BufferedImage image) {
-        BufferedImage result = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = result.createGraphics();
-        g.drawImage(image, 0, 0, null);
-        g.dispose();
+		// Create convolution kernel
+		Kernel convolutionKernel = new Kernel(kernelSize, kernelSize, kernel);
+		ConvolveOp convolveOp = new ConvolveOp(convolutionKernel, ConvolveOp.EDGE_NO_OP, null);
 
-        // Convert image to binary (black and white)
-        return convertToBinary(result);
-    }
+		// Apply the filter to the image
+		BufferedImage result = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+		convolveOp.filter(image, result);
 
-    // Method to convert image to binary
-    private BufferedImage convertToBinary(BufferedImage image) {
-        BufferedImage binaryImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
-        Graphics2D g = binaryImage.createGraphics();
-        g.drawImage(image, 0, 0, null);
-        g.dispose();
-        return binaryImage;
-    }
+		return result;
+	}
 
-    private static String processText(String text) {
-        StringBuilder processed = new StringBuilder();
-        String[] lines = text.split("\n");
-        Pattern pattern = Pattern.compile("[a-zA-Z0-9\\s/-]+");
+	// Method to enhance contrast
+	private BufferedImage enhanceContrast(BufferedImage image) {
+		BufferedImage result = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = result.createGraphics();
+		g.drawImage(image, 0, 0, null);
+		g.dispose();
 
-        for (String line : lines) {
-            Matcher matcher = pattern.matcher(line);
-            StringBuilder englishPart = new StringBuilder();
+		// Convert image to binary (black and white)
+		return convertToBinary(result);
+	}
 
-            while (matcher.find()) {
-                englishPart.append(matcher.group().trim()).append(" ");
-            }
-            if (englishPart.length() > 0) {
-                processed.append(englishPart.toString().trim()).append("\n");
-            }
-        }
+	// Method to convert image to binary
+	private BufferedImage convertToBinary(BufferedImage image) {
+		BufferedImage binaryImage = new BufferedImage(image.getWidth(), image.getHeight(),
+				BufferedImage.TYPE_BYTE_BINARY);
+		Graphics2D g = binaryImage.createGraphics();
+		g.drawImage(image, 0, 0, null);
+		g.dispose();
+		return binaryImage;
+	}
 
-        return processed.toString();
-    }
+	private static String processText(String text) {
+		StringBuilder processed = new StringBuilder();
+		String[] lines = text.split("\n");
+		Pattern pattern = Pattern.compile("[a-zA-Z0-9\\s/-]+");
+
+		for (String line : lines) {
+			Matcher matcher = pattern.matcher(line);
+			StringBuilder englishPart = new StringBuilder();
+
+			while (matcher.find()) {
+				englishPart.append(matcher.group().trim()).append(" ");
+			}
+			if (englishPart.length() > 0) {
+				processed.append(englishPart.toString().trim()).append("\n");
+			}
+		}
+
+		return processed.toString();
+	}
 }
