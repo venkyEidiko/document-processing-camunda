@@ -11,6 +11,7 @@ const Home = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false); // State to manage loading status
   const navigate = useNavigate();
+const url=process.env.REACT_APP_API_URL+process.env.REACT_APP_UPLOAD_DOCUMENT1_ENDPOINT;
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -23,20 +24,16 @@ const Home = () => {
         return;
       }
       setLoading(true); // Start loader
-      const url = `http://localhost:8085/`;
-      const formData = new FormData();
+          const formData = new FormData();
       formData.append('file', selectedFile);
-
-      const response = await axios.post(`${url}uploadDocument1`, formData, {
+      const response = await axios.post(`${url}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-      console.log("Upload file response:", response);
       toast.success(response.data);
       navigate('/task');
     } catch (error) {
-      console.error('Error uploading file: ', error);
       toast.error('Failed to upload file.');
     } finally {
       setLoading(false); 

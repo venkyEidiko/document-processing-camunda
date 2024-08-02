@@ -4,30 +4,38 @@ import './usertask.css';
 import MUIDataTable from 'mui-datatables';
 import axios from 'axios';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 const Task = () => {
     
     const [taskData, setTaskData] = useState([]);
+    
     const [tasktype, setTaskType] = useState('unasign');
+    
+
     const [claimUnClaim, setClaimUnClaim] = useState('Claim');
     const [title,setTitle]=useState("Unasign Task List")
-    const url = `http://localhost:8085/`;
+    const url = process.env.REACT_APP_API_URL;
 
     const navigate = useNavigate();
 
     const fetchData = useCallback(async () => {
-        try {
-            const response = await axios.get(tasktype === 'unasign' ? `${url}getUnassignTask` : `${url}getAssignTask`);
+       
+        try {  
+            const response = await axios.get(tasktype === 'unasign' ? 
+                `${url+process.env.REACT_APP_GET_UNASIGN_TASK_ENDPOINT}` :
+                 `${url+process.env.REACT_APP_GET_ASIGN_TASK_ENDPOINT}`);
             setTaskData(response.data);
-            console.log('response : ', response.data);
+           
         } catch (error) {
             console.error('Error fetching data:', error);
         }
+        
     }, [tasktype, url]);
 
     useEffect(() => {
         fetchData();
+      
     }, [fetchData]);
 
     const columns = [
@@ -68,28 +76,23 @@ const Task = () => {
     };
 
     const handleButtonClick = (rowData) => {
-        console.log("Button clicked for row:", rowData);
+    
         taskData.forEach(data => {
-            console.log("if block in handleButtonClick : ", rowData[0], data.bussinessKey);
-            if (rowData[0] === data.businessKey) {
-                let taskId = data.taskId;
-                console.log("taskId : ", taskId);
+                     if (rowData[0] === data.businessKey) {
+                let taskId = data.taskId;  
                 if (claimUnClaim === 'Claim') {
-                    fetch(`${url}claimTask?taskId=${taskId}`).then(res => {
-                        console.log("Claim response : ", res);
+                    fetch(`${url}claimTask?taskId=${taskId}`).then(res => {  
                         fetchData()
                         toast.success('Task claimed sucessfully !')
-                    }).catch(error => {
-                        console.log("Claim failed error", error)
+                    }).catch(error => {          
                         toast.error('Failed task claim !')
                     });
                 } else if (claimUnClaim === 'UnClaim') {
                     fetch(`${url}unClaimTask?taskId=${taskId}`).then(res => {
-                        console.log("UnClaim response : ", res);
+                     
                         fetchData()
                         toast.success('Task claimed sucessfully !')
-                    }).catch(error => {
-                        console.log("UnClaim failed error", error)
+                    }).catch(error => {  
                         toast.error('Failed task unclaim !')
                     })
                 }
@@ -107,12 +110,8 @@ const Task = () => {
     };
 
     const handleEyeButtonClick = (rowData) => {
-
-        console.log("Eye Profile data", rowData)
         taskData.forEach(data => {
-            console.log("if block in handleEyeButtonClick : ", rowData[0], data.bussinessKey);
             if (rowData[0] === data.businessKey) {
-                console.log("Eye Profile  full data", data)
                 navigate('/profile', { state: { taskData: data } });
 
             }

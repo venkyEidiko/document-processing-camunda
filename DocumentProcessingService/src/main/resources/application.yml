@@ -1,6 +1,17 @@
 
 server:
   port: 8085
+
+app:
+  urls:
+    client: "http://localhost:3000"
+    camundaBaseUrl: "http://localhost:9090/engine-rest"
+    startProcess: "/process-definition/key/document-processing-engine-process/start"
+    getUnassignTask: "/task"
+    claimTask: "/task/%s/claim"
+    unclaimTask: "/task/%s/unclaim"
+    taskCount: "/history/task/count?taskAssignee=admin"
+    completeTask: "/task/%s/complete"
   
 spring:
   application:
