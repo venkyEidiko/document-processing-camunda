@@ -7,8 +7,8 @@ import com.documentprocessing.model.response.StartProcessResponse;
 import com.documentprocessing.model.response.TaskCamundaResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -18,15 +18,21 @@ import java.util.Random;
 @Slf4j
 public class EngineService {
 
-    private   Random random = new Random();
-    public static final String START_PROCESS_URL = "/process-definition/key/document-processing-engine-process/start";
-    public static final String GET_UNASSIGN_TASK = "/task";
-    public static final String CLAIM_TASK = "/task/%s/claim";
-    public static final String UNCLAIM_TASK = "/task/%s/unclaim";
-    public static final String TASK_COUNT = "/history/task/count?taskAssignee=admin";
-    public static final String COMPLETE_TASK = "/task/%s/complete";
 
+    @Value("${app.urls.startProcess}")
+    private String startProcess;
+    @Value("${app.urls.getUnassignTask}")
+    private String getUnassignTask;
+    @Value("${app.urls.claimTask}")
+    private String claimTask;
+    @Value("${app.urls.unclaimTask}")
+    private String unclaimTask;
+    @Value("${app.urls.taskCount}")
+    private String taskCount;
+    @Value("${app.urls.completeTask}")
+    private String completeTask;
 
+    private final Random random = new Random();
     private final WebClientService webClientService;
     private final AadharService aadharService;
     private final ProcessService processService;
@@ -41,15 +47,17 @@ public class EngineService {
                 .build();
         processDetails = processService.saveProcess(processDetails, businessKey);
         aadharService.saveDocument(businessKey);
-        StartProcessResponse response = webClientService.postCall(START_PROCESS_URL,
+        log.info(startProcess);
+        StartProcessResponse response = webClientService.postCall(startProcess,
                 camundaVariables, StartProcessResponse.class);
+
         processService.saveProcess(response.getId(),processDetails);
         log.info("response from camunda engine {}", response);
         return response;
     }
 
     public List<ProcessDetails> getUnassignTask(){
-        TaskCamundaResponse[] response = webClientService.postCall(GET_UNASSIGN_TASK, new UnAssignRequest(), com.documentprocessing.model.response.TaskCamundaResponse[].class);
+        TaskCamundaResponse[] response = webClientService.postCall(getUnassignTask, new UnAssignRequest(), com.documentprocessing.model.response.TaskCamundaResponse[].class);
 
         return generateProcessDetails(response);
     }
@@ -71,23 +79,26 @@ public class EngineService {
     }
 
     public List<ProcessDetails> getassignTask(){
-        TaskCamundaResponse[] response = webClientService.postCall(GET_UNASSIGN_TASK, new AssigntaskRequest(), com.documentprocessing.model.response.TaskCamundaResponse[].class);
+        TaskCamundaResponse[] response = webClientService.postCall(getUnassignTask, new AssigntaskRequest(), com.documentprocessing.model.response.TaskCamundaResponse[].class);
 
         return generateProcessDetails(response);
     }
 
     public void claimTask(String taskId){
-        String url = String.format(CLAIM_TASK,taskId);
+        String url = String.format(claimTask,taskId);
+        log.info(url);
         webClientService.postCall(url,new ClaimRequestCamunda(),Object.class);
     }
 
     public void unClaimTask(String taskId) {
-        String url = String.format(UNCLAIM_TASK,taskId);
+        String url = String.format(unclaimTask,taskId);
+        log.info(url);
         webClientService.postCall(url);
     }
 
     public void completeTask(String taskId){
-        String url = String.format(COMPLETE_TASK,taskId);
+        String url = String.format(completeTask,taskId);
+        log.info(url);
         webClientService.postCall(url,new CompleteTaskRequestCamunda(),Object.class);
     }
 
