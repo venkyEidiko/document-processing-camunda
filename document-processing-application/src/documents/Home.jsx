@@ -24,20 +24,16 @@ const url=process.env.REACT_APP_API_URL+process.env.REACT_APP_UPLOAD_DOCUMENT1_E
         return;
       }
       setLoading(true); // Start loader
-     console.log("url : ",url)
-      const formData = new FormData();
+          const formData = new FormData();
       formData.append('file', selectedFile);
-
       const response = await axios.post(`${url}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-      console.log("Upload file response:", response);
       toast.success(response.data);
       navigate('/task');
     } catch (error) {
-      console.error('Error uploading file: ', error);
       toast.error('Failed to upload file.');
     } finally {
       setLoading(false); 

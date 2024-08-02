@@ -25,36 +25,30 @@ const Profile = () => {
             try {
                 await axios.get(`${url+process.env.REACT_APP_GET_BY_BUSINESS_KEY_ENDPOINT}${businessKey}`).then(response => {
                     let user = response.data;
-                    setUserData(user);
-
-                    console.log('response : ', response.data);
+                    setUserData(user);                  
                     if (user.aadhaarImage) {
                         setBase64String(user.aadhaarImage);
                     } else {
                         // Handle case where aadhaarImage is null or undefined
                         setBase64String(null); // Set base64String to null if image data is missing
-                    }
-                    console.log('response : ', response.data.aadhaarImage);
+                    }                    
                 });
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         };
-
         fetchData();
     }, [url, businessKey]);
 
     const completeTask = async () => {
         try {
-            console.log("Task Id in profile : ", taskData);
-            await axios.get(`${url+process.env.REACT_APP_COMPLETE_TASK_ENDPOINT}${taskData.taskId}`).then(response => {
-                console.log("call to complete task : ", response)
+            await axios.get(`${url+process.env.REACT_APP_COMPLETE_TASK_ENDPOINT}${taskData.taskId}`).then(response => { 
                 toast.success("Task completed sucessfully !")
                 navigate('/task');
-                console.log('response : ', response.data);
+               
             });
         } catch (error) {
-            console.error('Error fetching data:', error);
+           
             toast.error("Failed to complete the task !")
         }
     };
