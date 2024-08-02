@@ -10,11 +10,12 @@ const Profile = () => {
     const [userData, setUserData] = useState(null);
     const [base64String, setBase64String] = useState(null);
     const navigate = useNavigate();
-    const url = `http://localhost:8085/`;
+    const url = process.env.REACT_APP_API_URL;
 
     const location = useLocation();
     const { taskData } = location.state || {};
-    var businessKey = 'DOC3885'
+    
+    var businessKey = ''
     if (taskData) {
         businessKey = taskData.businessKey
     }
@@ -22,7 +23,7 @@ const Profile = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await axios.get(`${url}getByBusinesskey/${businessKey}`).then(response => {
+                await axios.get(`${url+process.env.REACT_APP_GET_BY_BUSINESS_KEY_ENDPOINT}${businessKey}`).then(response => {
                     let user = response.data;
                     setUserData(user);
 
@@ -46,10 +47,10 @@ const Profile = () => {
     const completeTask = async () => {
         try {
             console.log("Task Id in profile : ", taskData);
-            await axios.get(`${url}completeTask?taskId=${taskData.taskId}`).then(response => {
+            await axios.get(`${url+process.env.REACT_APP_COMPLETE_TASK_ENDPOINT}${taskData.taskId}`).then(response => {
                 console.log("call to complete task : ", response)
                 toast.success("Task completed sucessfully !")
-                navigate('/task')
+                navigate('/task');
                 console.log('response : ', response.data);
             });
         } catch (error) {

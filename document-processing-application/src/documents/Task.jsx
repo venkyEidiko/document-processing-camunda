@@ -4,30 +4,39 @@ import './usertask.css';
 import MUIDataTable from 'mui-datatables';
 import axios from 'axios';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 const Task = () => {
     
     const [taskData, setTaskData] = useState([]);
+    
     const [tasktype, setTaskType] = useState('unasign');
+    
+
     const [claimUnClaim, setClaimUnClaim] = useState('Claim');
     const [title,setTitle]=useState("Unasign Task List")
-    const url = `http://localhost:8085/`;
+    const url = process.env.REACT_APP_API_URL;
 
     const navigate = useNavigate();
 
     const fetchData = useCallback(async () => {
-        try {
-            const response = await axios.get(tasktype === 'unasign' ? `${url}getUnassignTask` : `${url}getAssignTask`);
+       
+        try {  
+            const response = await axios.get(tasktype === 'unasign' ? 
+                `${url+process.env.REACT_APP_GET_UNASIGN_TASK_ENDPOINT}` :
+                 `${url+process.env.REACT_APP_GET_ASIGN_TASK_ENDPOINT}`);
             setTaskData(response.data);
             console.log('response : ', response.data);
+           
         } catch (error) {
             console.error('Error fetching data:', error);
         }
+        
     }, [tasktype, url]);
 
     useEffect(() => {
         fetchData();
+      
     }, [fetchData]);
 
     const columns = [
