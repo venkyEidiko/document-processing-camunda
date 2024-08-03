@@ -11,12 +11,12 @@ server:
 
 
 
-camunda:
-  bpm:
-    database:
-      schema-update: 'true'
-      schema-name: camunda
-      table-prefix: camunda.
+#camunda:
+#  bpm:
+#    database:
+#      schema-update: 'true'
+#      schema-name: camunda
+#      table-prefix: camunda.
 
 
 
@@ -27,7 +27,11 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: org.h2.Driver
     username: root
-    url: jdbc:mysql://localhost:3306/camunda
+    url: jdbc:h2:tcp://localhost:9092/mem:testdb
     password: root
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
